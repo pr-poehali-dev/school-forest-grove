@@ -7,9 +7,72 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import Icon from "@/components/ui/icon";
+import { useState } from "react";
 
 const Index = () => {
+  const [posts, setPosts] = useState([
+    {
+      id: 1,
+      title: "Весенняя акция по посадке деревьев",
+      content:
+        "Сегодня участники лесничества высадили 150 саженцев дуба и березы в парке имени Гагарина. Это важный вклад в экологию нашего города!",
+      category: "Мероприятия",
+      date: "2024-04-15",
+      author: "Иван Петров",
+    },
+    {
+      id: 2,
+      title: "Результаты экологического мониторинга",
+      content:
+        "Проведен анализ состояния лесных участков. Обнаружено улучшение показателей биоразнообразия на 15% по сравнению с прошлым годом.",
+      category: "Исследования",
+      date: "2024-04-10",
+      author: "Мария Сидорова",
+    },
+  ]);
+
+  const [newPost, setNewPost] = useState({
+    title: "",
+    content: "",
+    category: "",
+    author: "",
+  });
+
+  const handleAddPost = () => {
+    if (
+      newPost.title &&
+      newPost.content &&
+      newPost.category &&
+      newPost.author
+    ) {
+      const post = {
+        id: posts.length + 1,
+        ...newPost,
+        date: new Date().toISOString().split("T")[0],
+      };
+      setPosts([post, ...posts]);
+      setNewPost({ title: "", content: "", category: "", author: "" });
+    }
+  };
+
   const activities = [
     {
       title: "Экологические исследования",
@@ -84,7 +147,7 @@ const Index = () => {
                 </p>
               </div>
             </div>
-            <nav className="hidden md:flex space-x-6">
+            <nav className="hidden md:flex space-x-6 items-center">
               <Button
                 variant="ghost"
                 className="text-white hover:bg-forest-light"
@@ -103,6 +166,138 @@ const Index = () => {
               >
                 Мероприятия
               </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="bg-white text-forest hover:bg-gray-100">
+                    <Icon name="Plus" className="mr-2" size={16} />
+                    Написать пост
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px]">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-montserrat text-forest">
+                      Создать новый пост
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-6 py-4">
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="title"
+                        className="text-sm font-medium text-forest"
+                      >
+                        Заголовок поста
+                      </Label>
+                      <Input
+                        id="title"
+                        placeholder="Введите заголовок..."
+                        value={newPost.title}
+                        onChange={(e) =>
+                          setNewPost({ ...newPost, title: e.target.value })
+                        }
+                        className="border-forest-light focus:border-forest"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="content"
+                        className="text-sm font-medium text-forest"
+                      >
+                        Содержание
+                      </Label>
+                      <Textarea
+                        id="content"
+                        placeholder="Расскажите о вашем мероприятии, исследовании или новости..."
+                        value={newPost.content}
+                        onChange={(e) =>
+                          setNewPost({ ...newPost, content: e.target.value })
+                        }
+                        className="min-h-[120px] border-forest-light focus:border-forest"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="category"
+                          className="text-sm font-medium text-forest"
+                        >
+                          Категория
+                        </Label>
+                        <Select
+                          value={newPost.category}
+                          onValueChange={(value) =>
+                            setNewPost({ ...newPost, category: value })
+                          }
+                        >
+                          <SelectTrigger className="border-forest-light focus:border-forest">
+                            <SelectValue placeholder="Выберите категорию" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Мероприятия">
+                              🌱 Мероприятия
+                            </SelectItem>
+                            <SelectItem value="Исследования">
+                              🔬 Исследования
+                            </SelectItem>
+                            <SelectItem value="Новости">📰 Новости</SelectItem>
+                            <SelectItem value="Образование">
+                              📚 Образование
+                            </SelectItem>
+                            <SelectItem value="Достижения">
+                              🏆 Достижения
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="author"
+                          className="text-sm font-medium text-forest"
+                        >
+                          Автор
+                        </Label>
+                        <Input
+                          id="author"
+                          placeholder="Ваше имя"
+                          value={newPost.author}
+                          onChange={(e) =>
+                            setNewPost({ ...newPost, author: e.target.value })
+                          }
+                          className="border-forest-light focus:border-forest"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end space-x-3 pt-4">
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="border-forest text-forest hover:bg-forest-light/10"
+                        >
+                          Отмена
+                        </Button>
+                      </DialogTrigger>
+                      <DialogTrigger asChild>
+                        <Button
+                          onClick={handleAddPost}
+                          className="bg-forest hover:bg-forest-dark text-white"
+                          disabled={
+                            !newPost.title ||
+                            !newPost.content ||
+                            !newPost.category ||
+                            !newPost.author
+                          }
+                        >
+                          <Icon name="Send" className="mr-2" size={16} />
+                          Опубликовать
+                        </Button>
+                      </DialogTrigger>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </nav>
           </div>
         </div>
@@ -167,6 +362,76 @@ const Index = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog/News Section */}
+      <section className="py-20 bg-gradient-to-br from-white to-nature-warm">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-forest text-white">
+              📰 Новости и события
+            </Badge>
+            <h2 className="text-4xl font-montserrat font-bold text-forest mb-6">
+              Последние новости лесничества
+            </h2>
+            <p className="text-xl font-open-sans text-gray-600 max-w-3xl mx-auto">
+              Следите за нашими достижениями, мероприятиями и исследованиями
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {posts.map((post) => (
+              <Card
+                key={post.id}
+                className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white"
+              >
+                <CardHeader>
+                  <div className="flex items-center justify-between mb-4">
+                    <Badge className="bg-forest-light text-white">
+                      {post.category}
+                    </Badge>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <Icon name="Calendar" className="mr-1" size={14} />
+                      {new Date(post.date).toLocaleDateString("ru-RU")}
+                    </div>
+                  </div>
+                  <CardTitle className="text-xl font-montserrat font-semibold text-forest mb-2">
+                    {post.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-gray-600 font-open-sans leading-relaxed mb-4">
+                    {post.content}
+                  </CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-sm text-gray-500">
+                      <Icon name="User" className="mr-1" size={14} />
+                      {post.author}
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-forest hover:bg-forest-light/10"
+                    >
+                      Читать полностью
+                      <Icon name="ArrowRight" className="ml-1" size={14} />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Button
+              variant="outline"
+              className="border-forest text-forest hover:bg-forest hover:text-white"
+            >
+              <Icon name="Archive" className="mr-2" size={16} />
+              Показать все новости
+            </Button>
           </div>
         </div>
       </section>
